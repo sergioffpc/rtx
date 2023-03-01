@@ -8,11 +8,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestPoint3Sub substracting two points.
+func TestPoint3Sub(t *testing.T) {
+	a, b := rtx.Point3{3, 2, 1}, rtx.Point3{5, 6, 7}
+	assert.Equal(t, rtx.Vector3{-2, -4, -6}, rtx.Point3.Sub(a, b))
+}
+
+// TestPoint3SubVector substracting a vector from a point.
+func TestPoint3SubVector(t *testing.T) {
+	a, b := rtx.Point3{3, 2, 1}, rtx.Vector3{5, 6, 7}
+	assert.Equal(t, rtx.Point3{-2, -4, -6}, rtx.Point3.SubVector(a, b))
+}
+
+// TestVector3Add adding two vectors.
 func TestVector3Add(t *testing.T) {
 	a, b := rtx.Vector3{3, -2, 5}, rtx.Vector3{-2, 3, 1}
 	assert.Equal(t, rtx.Vector3{1, 1, 6}, rtx.Vector3.Add(a, b))
 }
 
+// TestVector3Cross the cross product of two vectors.
 func TestVector3Cross(t *testing.T) {
 	for _, tc := range []struct {
 		a, b     rtx.Vector3
@@ -27,15 +41,18 @@ func TestVector3Cross(t *testing.T) {
 	}
 }
 
+// TestVector3DivFloat dividing a vector by a scalar.
 func TestVector3DivFloat(t *testing.T) {
 	assert.Equal(t, rtx.Vector3{0.5, -1, 1.5}, rtx.Vector3{1, -2, 3}.DivFloat(2))
 }
 
+// TestVector3Dot the dot product of two vectors.
 func TestVector3Dot(t *testing.T) {
 	a, b := rtx.Vector3{1, 2, 3}, rtx.Vector3{2, 3, 4}
 	assert.Equal(t, 20.0, rtx.Vector3.Dot(a, b))
 }
 
+// TestVector3Len computing the length of a vector.
 func TestVector3Len(t *testing.T) {
 	for _, tc := range []struct {
 		a        rtx.Vector3
@@ -54,6 +71,7 @@ func TestVector3Len(t *testing.T) {
 	}
 }
 
+// TestVector3MulFloat multiplying a vector by a scalar.
 func TestVector3MulFloat(t *testing.T) {
 	for _, tc := range []struct {
 		a        rtx.Vector3
@@ -69,10 +87,12 @@ func TestVector3MulFloat(t *testing.T) {
 	}
 }
 
+// TestVector3Neg negating a vector.
 func TestVector3Neg(t *testing.T) {
 	assert.Equal(t, rtx.Vector3{-1, 2, -3}, rtx.Vector3{1, -2, 3}.Neg())
 }
 
+// TestVector3Normalize normalizing a vector.
 func TestVector3Normalize(t *testing.T) {
 	for _, tc := range []struct {
 		a        rtx.Vector3
@@ -87,6 +107,7 @@ func TestVector3Normalize(t *testing.T) {
 	}
 }
 
+// TestVector3Sub substracting two vectors.
 func TestVector3Sub(t *testing.T) {
 	a, b := rtx.Vector3{3, 2, 1}, rtx.Vector3{5, 6, 7}
 	assert.Equal(t, rtx.Vector3{-2, -4, -6}, rtx.Vector3.Sub(a, b))

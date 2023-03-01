@@ -8,6 +8,51 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestMatrix44Eq matrix equality.
+func TestMatrix44Eq(t *testing.T) {
+	for _, tc := range []struct {
+		a        rtx.Matrix44
+		b        rtx.Matrix44
+		expected bool
+	}{
+		{
+			a: rtx.Matrix44{
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			},
+			b: rtx.Matrix44{
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			},
+			expected: true,
+		},
+		{
+			a: rtx.Matrix44{
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			},
+			b: rtx.Matrix44{
+				2, 3, 4, 5,
+				6, 7, 8, 9,
+				8, 7, 6, 5,
+				4, 3, 2, 1,
+			},
+			expected: false,
+		},
+	} {
+		t.Run("", func(t *testing.T) {
+			assert.Equal(t, tc.expected, rtx.Matrix44.Eq(tc.a, tc.b))
+		})
+	}
+}
+
+// TestMatrix44Inverse calculation the inverse of a matrix.
 func TestMatrix44Inverse(t *testing.T) {
 	for _, tc := range []struct {
 		a        rtx.Matrix44
@@ -38,6 +83,7 @@ func TestMatrix44Inverse(t *testing.T) {
 	}
 }
 
+// TestMatrix44Mul multiplying two matrices.
 func TestMatrix44Mul(t *testing.T) {
 	for _, tc := range []struct {
 		a        rtx.Matrix44
@@ -86,6 +132,7 @@ func TestMatrix44Mul(t *testing.T) {
 	}
 }
 
+// TestMatrix44Transpose transposing a matrix.
 func TestMatrix44Transpose(t *testing.T) {
 	for _, tc := range []struct {
 		a        rtx.Matrix44
@@ -123,65 +170,95 @@ func TestTransformChain(t *testing.T) {
 	assert.Equal(t, rtx.Point3{15, 0, 7}, rtx.Point3{1, 0, 1}.Transform(rx, st, tt))
 }
 
+// ExampleTransform chained transformations must be applied in reverse order.
+// Output: rtx.Point3{15, 0, 7}
+func ExampleTransform() {
+	rx := rtx.RotateXTransform(math.Pi / 2)
+	st := rtx.ScaleTransform(5, 5, 5)
+	tt := rtx.TranslateTransform(10, 5, 7)
+	rtx.Point3{1, 0, 1}.Transform(rx, st, tt)
+}
+
+// TestTransformRotateXTransform rotating a point around the x axis.
 func TestTransformRotateXTransform(t *testing.T) {
 	for _, tc := range []struct {
-		v        rtx.Vector3
+		a        rtx.Point3
 		rx       rtx.Transform
-		expected rtx.Vector3
+		expected rtx.Point3
 	}{
-		{v: rtx.Vector3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 2), expected: rtx.Vector3{0, 0, 1}},
-		{v: rtx.Vector3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 4), expected: rtx.Vector3{0, math.Sqrt(2) / 2, math.Sqrt(2) / 2}},
-		{v: rtx.Vector3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 4).Inverse(), expected: rtx.Vector3{0, math.Sqrt(2) / 2, -math.Sqrt(2) / 2}},
+		{a: rtx.Point3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 2), expected: rtx.Point3{0, 0, 1}},
+		{a: rtx.Point3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 4), expected: rtx.Point3{0, math.Sqrt(2) / 2, math.Sqrt(2) / 2}},
+		{a: rtx.Point3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 4).Inverse(), expected: rtx.Point3{0, math.Sqrt(2) / 2, -math.Sqrt(2) / 2}},
 	} {
 		t.Run("", func(t *testing.T) {
-			assert.True(t, rtx.Vector3.Eq(tc.expected, tc.v.Transform(tc.rx)))
+			assert.True(t, rtx.Point3.Eq(tc.expected, tc.a.Transform(tc.rx)))
 		})
 	}
 }
 
+// TestTransformRotateYTransform rotating a point around the y axis.
 func TestTransformRotateYTransform(t *testing.T) {
 	for _, tc := range []struct {
-		v        rtx.Vector3
+		a        rtx.Point3
 		ry       rtx.Transform
-		expected rtx.Vector3
+		expected rtx.Point3
 	}{
-		{v: rtx.Vector3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 2), expected: rtx.Vector3{1, 0, 0}},
-		{v: rtx.Vector3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 4), expected: rtx.Vector3{math.Sqrt(2) / 2, 0, math.Sqrt(2) / 2}},
-		{v: rtx.Vector3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 4).Inverse(), expected: rtx.Vector3{-math.Sqrt(2) / 2, 0, math.Sqrt(2) / 2}},
+		{a: rtx.Point3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 2), expected: rtx.Point3{1, 0, 0}},
+		{a: rtx.Point3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 4), expected: rtx.Point3{math.Sqrt(2) / 2, 0, math.Sqrt(2) / 2}},
+		{a: rtx.Point3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 4).Inverse(), expected: rtx.Point3{-math.Sqrt(2) / 2, 0, math.Sqrt(2) / 2}},
 	} {
 		t.Run("", func(t *testing.T) {
-			assert.True(t, rtx.Vector3.Eq(tc.expected, tc.v.Transform(tc.ry)))
+			assert.True(t, rtx.Point3.Eq(tc.expected, tc.a.Transform(tc.ry)))
 		})
 	}
 }
 
+// TestTransformRotateZTransform rotating a point around the z axis.
+func TestTransformRotateZTransform(t *testing.T) {
+	for _, tc := range []struct {
+		a        rtx.Point3
+		rz       rtx.Transform
+		expected rtx.Point3
+	}{
+		{a: rtx.Point3{0, 1, 0}, rz: rtx.RotateZTransform(math.Pi / 2), expected: rtx.Point3{-1, 0, 0}},
+		{a: rtx.Point3{0, 1, 0}, rz: rtx.RotateZTransform(math.Pi / 4), expected: rtx.Point3{-math.Sqrt(2) / 2, math.Sqrt(2) / 2, 0}},
+		{a: rtx.Point3{0, 1, 0}, rz: rtx.RotateZTransform(math.Pi / 4).Inverse(), expected: rtx.Point3{0, 1, 0}},
+	} {
+		t.Run("", func(t *testing.T) {
+			assert.True(t, rtx.Point3.Eq(tc.expected, tc.a.Transform(tc.rz)))
+		})
+	}
+}
+
+// TestTransformScaleTransform a scaling matrix applied to a vector.
 func TestTransformScaleTransform(t *testing.T) {
 	for _, tc := range []struct {
-		p        rtx.Point3
+		a        rtx.Vector3
 		s        rtx.Transform
-		expected rtx.Point3
+		expected rtx.Vector3
 	}{
-		{p: rtx.Point3{-4, 6, 8}, s: rtx.ScaleTransform(2, 3, 4), expected: rtx.Point3{-8, 18, 32}},
-		{p: rtx.Point3{-4, 6, 8}, s: rtx.ScaleTransform(2, 3, 4).Inverse(), expected: rtx.Point3{-2, 2, 2}},
-		{p: rtx.Point3{2, 3, 4}, s: rtx.ScaleTransform(-1, 1, 1), expected: rtx.Point3{-2, 3, 4}},
+		{a: rtx.Vector3{-4, 6, 8}, s: rtx.ScaleTransform(2, 3, 4), expected: rtx.Vector3{-8, 18, 32}},
+		{a: rtx.Vector3{-4, 6, 8}, s: rtx.ScaleTransform(2, 3, 4).Inverse(), expected: rtx.Vector3{-2, 2, 2}},
+		{a: rtx.Vector3{2, 3, 4}, s: rtx.ScaleTransform(-1, 1, 1), expected: rtx.Vector3{-2, 3, 4}},
 	} {
 		t.Run("", func(t *testing.T) {
-			assert.True(t, rtx.Point3.Eq(tc.expected, tc.p.Transform(tc.s)))
+			assert.True(t, rtx.Vector3.Eq(tc.expected, tc.a.Transform(tc.s)))
 		})
 	}
 }
 
+// TestTransformTranslateTransform a translation matrix applied to a point.
 func TestTransformTranslateTransform(t *testing.T) {
 	for _, tc := range []struct {
-		p        rtx.Point3
+		a        rtx.Point3
 		s        rtx.Transform
 		expected rtx.Point3
 	}{
-		{p: rtx.Point3{-3, 4, 5}, s: rtx.TranslateTransform(5, -3, 2), expected: rtx.Point3{2, 1, 7}},
-		{p: rtx.Point3{-3, 4, 5}, s: rtx.TranslateTransform(5, -3, 2).Inverse(), expected: rtx.Point3{-8, 7, 3}},
+		{a: rtx.Point3{-3, 4, 5}, s: rtx.TranslateTransform(5, -3, 2), expected: rtx.Point3{2, 1, 7}},
+		{a: rtx.Point3{-3, 4, 5}, s: rtx.TranslateTransform(5, -3, 2).Inverse(), expected: rtx.Point3{-8, 7, 3}},
 	} {
 		t.Run("", func(t *testing.T) {
-			assert.True(t, rtx.Point3.Eq(tc.expected, tc.p.Transform(tc.s)))
+			assert.True(t, rtx.Point3.Eq(tc.expected, tc.a.Transform(tc.s)))
 		})
 	}
 }
