@@ -283,6 +283,15 @@ func (t Transform) Transpose() Transform {
 	}
 }
 
+func ChainTransform(ts ...Transform) Transform {
+	lastIdx := len(ts) - 1
+	t := ts[lastIdx]
+	for i := lastIdx - 1; i >= 0; i-- {
+		t = t.Mul(ts[i])
+	}
+	return t
+}
+
 func IdentityTransform() Transform {
 	return Transform{
 		M:   Identity(),
@@ -375,8 +384,8 @@ func TranslateTransform(x, y, z float64) Transform {
 	}
 }
 
-func (n Normal3) Transform(ts ...Transform) Normal3 {
-	inv := chain(ts).Inv
+func (n Normal3) Transform(t Transform) Normal3 {
+	inv := t.Inv
 	return Normal3{
 		X: inv[inv.at(0, 0)]*n.X + inv[inv.at(1, 0)]*n.Y + inv[inv.at(2, 0)]*n.Z,
 		Y: inv[inv.at(0, 1)]*n.X + inv[inv.at(1, 1)]*n.Y + inv[inv.at(2, 1)]*n.Z,
@@ -384,8 +393,8 @@ func (n Normal3) Transform(ts ...Transform) Normal3 {
 	}
 }
 
-func (p Point3) Transform(ts ...Transform) Point3 {
-	m := chain(ts).M
+func (p Point3) Transform(t Transform) Point3 {
+	m := t.M
 	q := Point3{
 		X: m[m.at(0, 0)]*p.X + m[m.at(0, 1)]*p.Y + m[m.at(0, 2)]*p.Z + m[m.at(0, 3)],
 		Y: m[m.at(1, 0)]*p.X + m[m.at(1, 1)]*p.Y + m[m.at(1, 2)]*p.Z + m[m.at(1, 3)],
@@ -400,29 +409,19 @@ func (p Point3) Transform(ts ...Transform) Point3 {
 	return q
 }
 
-func (r Ray) Transform(ts ...Transform) Ray {
-	t := chain(ts)
+func (r Ray) Transform(t Transform) Ray {
 	return Ray{
 		O:    r.O.Transform(t),
-		D:    r.D.Transform(t).Normalize(),
+		D:    r.D.Transform(t),
 		TMax: r.TMax,
 	}
 }
 
-func (v Vector3) Transform(ts ...Transform) Vector3 {
-	m := chain(ts).M
+func (v Vector3) Transform(t Transform) Vector3 {
+	m := t.M
 	return Vector3{
 		X: m[m.at(0, 0)]*v.X + m[m.at(0, 1)]*v.Y + m[m.at(0, 2)]*v.Z,
 		Y: m[m.at(1, 0)]*v.X + m[m.at(1, 1)]*v.Y + m[m.at(1, 2)]*v.Z,
 		Z: m[m.at(2, 0)]*v.X + m[m.at(2, 1)]*v.Y + m[m.at(2, 2)]*v.Z,
 	}
-}
-
-func chain(chain []Transform) Transform {
-	lastIdx := len(chain) - 1
-	t := chain[lastIdx]
-	for i := lastIdx - 1; i >= 0; i-- {
-		t = t.Mul(chain[i])
-	}
-	return t
 }

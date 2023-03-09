@@ -107,6 +107,11 @@ func TestVector3Normalize(t *testing.T) {
 	}
 }
 
+// TestVector3Reflect reflecting vectors.
+func TestVector3Reflect(t *testing.T) {
+	assert.Equal(t, rtx.Vector3{1, 1, 0}, rtx.Vector3.Reflect(rtx.Vector3{1, -1, 0}, rtx.Normal3{0, 1, 0}))
+}
+
 // TestVector3Sub substracting two vectors.
 func TestVector3Sub(t *testing.T) {
 	a, b := rtx.Vector3{3, 2, 1}, rtx.Vector3{5, 6, 7}

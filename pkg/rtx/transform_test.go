@@ -1,6 +1,7 @@
 package rtx_test
 
 import (
+	"fmt"
 	"math"
 	"sergioffpc/rtx/pkg/rtx"
 	"testing"
@@ -163,20 +164,21 @@ func TestMatrix44Transpose(t *testing.T) {
 	}
 }
 
+// TestTransformChain chained transformations must be applied in reverse order.
 func TestTransformChain(t *testing.T) {
 	rx := rtx.RotateXTransform(math.Pi / 2)
 	st := rtx.ScaleTransform(5, 5, 5)
 	tt := rtx.TranslateTransform(10, 5, 7)
-	assert.Equal(t, rtx.Point3{15, 0, 7}, rtx.Point3{1, 0, 1}.Transform(rx, st, tt))
+	assert.Equal(t, rtx.Point3{15, 0, 7}, rtx.Point3{1, 0, 1}.Transform(rtx.ChainTransform(rx, st, tt)))
 }
 
 // ExampleTransform chained transformations must be applied in reverse order.
-// Output: rtx.Point3{15, 0, 7}
 func ExampleTransform() {
 	rx := rtx.RotateXTransform(math.Pi / 2)
 	st := rtx.ScaleTransform(5, 5, 5)
 	tt := rtx.TranslateTransform(10, 5, 7)
-	rtx.Point3{1, 0, 1}.Transform(rx, st, tt)
+	fmt.Printf("%v", rtx.Point3{1, 0, 1}.Transform(rtx.ChainTransform(rx, st, tt)))
+	// Output: {15 0 7}
 }
 
 // TestTransformRotateXTransform rotating a point around the x axis.

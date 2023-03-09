@@ -124,6 +124,11 @@ func (v Vector3) Neg() Vector3 { return Vector3.MulFloat(v, -1) }
 
 func (v Vector3) Normalize() Vector3 { return Vector3.DivFloat(v, v.Len()) }
 
+func (v Vector3) Reflect(n Normal3) Vector3 {
+	f := 2 * Vector3.Dot(v, Vector3(n))
+	return Vector3.Sub(v, Vector3.MulFloat(Vector3(n), f))
+}
+
 func (v Vector3) Sub(u Vector3) Vector3 { return Vector3{X: v.X - u.X, Y: v.Y - u.Y, Z: v.Z - u.Z} }
 
 func (v *Vector3) SubAssign(u Vector3) {
