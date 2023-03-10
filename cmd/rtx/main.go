@@ -21,8 +21,14 @@ func main() {
 					Alpha: 200,
 					Color: rtx.Spectrum{R: 0, G: 0, B: 1},
 				},
-				ObjectToWorld: rtx.TranslateTransform(0, 0, 5),
-				WorldToObject: rtx.TranslateTransform(0, 0, 5).Inverse(),
+				ObjectToWorld: rtx.ChainTransform(
+					rtx.ScaleTransform(0.5, 0.5, 0.5),
+					rtx.TranslateTransform(0, 0, 1),
+				),
+				WorldToObject: rtx.ChainTransform(
+					rtx.ScaleTransform(0.5, 0.5, 0.5),
+					rtx.TranslateTransform(0, 0, 1),
+				).Inverse(),
 			},
 		},
 		Lights: []rtx.LightPrimitive{
@@ -30,8 +36,8 @@ func main() {
 				Light: rtx.PointLight{
 					I: rtx.Spectrum{R: 1, G: 1, B: 1},
 				},
-				LightToWorld: rtx.TranslateTransform(5, 0, 0),
-				WorldToLight: rtx.TranslateTransform(5, 0, 0).Inverse(),
+				LightToWorld: rtx.TranslateTransform(1, 0, 0),
+				WorldToLight: rtx.TranslateTransform(1, 0, 0).Inverse(),
 			},
 		},
 	}

@@ -56,6 +56,10 @@ func (p *Point3) AddAssign(q Point3) {
 	p.Z += q.Z
 }
 
+func (p Point3) Distance(q Point3) float64 { return Point3.Sub(p, q).Len() }
+
+func (p Point3) DistanceSq(q Point3) float64 { return Point3.Sub(p, q).LenSq() }
+
 func (p *Point3) DivAssignFloat(f float64) { p.MulAssignFloat(f) }
 
 func (p Point3) DivFloat(f float64) Point3 { return Point3.MulFloat(p, 1/f) }
@@ -110,7 +114,9 @@ func (v Vector3) Eq(u Vector3) bool {
 	return EqualFloat(v.X, u.X) && EqualFloat(v.Y, u.Y) && EqualFloat(v.Z, u.Z)
 }
 
-func (v Vector3) Len() float64 { return math.Sqrt(Vector3.Dot(v, v)) }
+func (v Vector3) Len() float64 { return math.Sqrt(v.LenSq()) }
+
+func (v Vector3) LenSq() float64 { return Vector3.Dot(v, v) }
 
 func (v *Vector3) MulAssignFloat(f float64) {
 	v.X *= f

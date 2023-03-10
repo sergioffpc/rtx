@@ -13,6 +13,12 @@ type Interaction struct {
 	Primitive *GeometricPrimitive
 }
 
+func (i Interaction) Shade(l LightPrimitive) Spectrum {
+	lP := Point3{}.Transform(l.LightToWorld)
+	wi := Point3.Sub(lP, i.P).Normalize()
+	return i.Primitive.F(i.P, i.N, wi, i.Wo, l.Li(i.P), i.T)
+}
+
 type GeometricPrimitive struct {
 	Shape         Shape
 	Material      Material
@@ -20,15 +26,19 @@ type GeometricPrimitive struct {
 	WorldToObject Transform
 }
 
-func (p *GeometricPrimitive) intersect(r Ray) (ok bool, isect Interaction) {
-	if hit, pos, n, t := p.Shape.Intersect(r.Transform(p.WorldToObject)); hit {
+func (g GeometricPrimitive) F(p Point3, n Normal3, wi, wo Vector3, i Spectrum, t float64) Spectrum {
+	return g.Material.F(p.Transform(g.WorldToObject), n.Transform(g.WorldToObject), wi, wo, i, t)
+}
+
+func (g *GeometricPrimitive) intersect(r Ray) (ok bool, isect Interaction) {
+	if hit, hP, hN, hT := g.Shape.Intersect(r.Transform(g.WorldToObject)); hit {
 		ok = true
 		isect = Interaction{
-			P:         pos.Transform(p.ObjectToWorld),
-			N:         n.Transform(p.ObjectToWorld).Normalize(),
+			P:         hP.Transform(g.ObjectToWorld),
+			N:         hN.Transform(g.ObjectToWorld),
 			Wo:        r.D.Neg(),
-			T:         t,
-			Primitive: p,
+			T:         hT,
+			Primitive: g,
 		}
 	}
 
@@ -39,6 +49,10 @@ type LightPrimitive struct {
 	Light        Light
 	LightToWorld Transform
 	WorldToLight Transform
+}
+
+func (l LightPrimitive) Li(p Point3) Spectrum {
+	return l.Light.Li(p.Transform(l.WorldToLight))
 }
 
 type Scene struct {
