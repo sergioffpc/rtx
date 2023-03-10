@@ -20,14 +20,13 @@ type GeometricPrimitive struct {
 	WorldToObject Transform
 }
 
-func (p *GeometricPrimitive) intersect(rW Ray) (ok bool, isect Interaction) {
-	rO := rW.Transform(p.WorldToObject)
-	if hit, pO, nO, t := p.Shape.Intersect(rO); hit {
+func (p *GeometricPrimitive) intersect(r Ray) (ok bool, isect Interaction) {
+	if hit, pos, n, t := p.Shape.Intersect(r.Transform(p.WorldToObject)); hit {
 		ok = true
 		isect = Interaction{
-			P:         pO.Transform(p.ObjectToWorld),
-			N:         nO.Transform(p.ObjectToWorld).Normalize(),
-			Wo:        rW.D.Neg(),
+			P:         pos.Transform(p.ObjectToWorld),
+			N:         n.Transform(p.ObjectToWorld).Normalize(),
+			Wo:        r.D.Neg(),
 			T:         t,
 			Primitive: p,
 		}
@@ -37,9 +36,9 @@ func (p *GeometricPrimitive) intersect(rW Ray) (ok bool, isect Interaction) {
 }
 
 type LightPrimitive struct {
-	Light         Light
-	ObjectToWorld Transform
-	WorldToObject Transform
+	Light        Light
+	LightToWorld Transform
+	WorldToLight Transform
 }
 
 type Scene struct {
@@ -47,11 +46,11 @@ type Scene struct {
 	Lights     []LightPrimitive
 }
 
-func (s Scene) Intersect(rW Ray) (ok bool, nearest Interaction) {
-	for _, e := range s.Geometries {
-		g := e
-		if hit, isect := g.intersect(rW); hit {
-			rW.TMax = isect.T
+func (s Scene) Intersect(r Ray) (ok bool, nearest Interaction) {
+	for _, g := range s.Geometries {
+		p := g
+		if hit, isect := p.intersect(r); hit {
+			r.TMax = isect.T
 			ok = true
 			nearest = isect
 		}

@@ -7,15 +7,15 @@ type Integrator interface {
 type Whitted struct{}
 
 func (w Whitted) Render(scene *Scene, ray Ray) Spectrum {
-	var lI Spectrum
+	var li Spectrum
 	if ok, isect := scene.Intersect(ray); ok {
 		for _, l := range scene.Lights {
-			lP := Point3.Transform(Point3{}, l.ObjectToWorld)
+			lP := Point3.Transform(Point3{}, l.LightToWorld)
 			wi := Point3.Sub(lP, isect.P).Normalize()
-			f := isect.Primitive.Material.F(isect.P, isect.N, wi, isect.Wo, l.Light.I(), isect.T)
-			lI.AddAssign(f)
+			f := isect.Primitive.Material.F(isect.P, isect.N, wi, isect.Wo, l.Light.Li(), isect.T)
+			li.AddAssign(f)
 		}
 	}
 
-	return lI
+	return li
 }

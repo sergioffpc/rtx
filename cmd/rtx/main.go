@@ -28,10 +28,10 @@ func main() {
 		Lights: []rtx.LightPrimitive{
 			{
 				Light: rtx.PointLight{
-					Ia: rtx.Spectrum{R: 1, G: 1, B: 1},
+					I: rtx.Spectrum{R: 1, G: 1, B: 1},
 				},
-				ObjectToWorld: rtx.TranslateTransform(5, 0, 0),
-				WorldToObject: rtx.TranslateTransform(5, 0, 0).Inverse(),
+				LightToWorld: rtx.TranslateTransform(5, 0, 0),
+				WorldToLight: rtx.TranslateTransform(5, 0, 0).Inverse(),
 			},
 		},
 	}

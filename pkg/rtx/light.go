@@ -1,13 +1,13 @@
 package rtx
 
 type Light interface {
-	I() Spectrum
+	Li() Spectrum
 }
 
 type PointLight struct {
-	Ia Spectrum
+	I Spectrum
 }
 
-func (l PointLight) I() Spectrum {
-	return l.Ia
+func (l PointLight) Li() Spectrum {
+	return l.I
 }
