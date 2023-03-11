@@ -88,6 +88,10 @@ type Ray struct {
 	TMax float64
 }
 
+func (r Ray) Eq(s Ray) bool {
+	return r.O.Eq(s.O) && r.D.Eq(s.D) && r.TMax == s.TMax
+}
+
 func (r Ray) Position(t float64) Point3 { return Point3.AddVector(r.O, Vector3.MulFloat(r.D, t)) }
 
 type Vector3 struct{ X, Y, Z float64 }

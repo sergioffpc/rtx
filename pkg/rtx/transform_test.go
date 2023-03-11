@@ -181,6 +181,34 @@ func ExampleTransform() {
 	// Output: {15 0 7}
 }
 
+// TestTransformLookAtTransform view transformation.
+func TestTransformLookAtTransform(t *testing.T) {
+	for _, tc := range []struct {
+		from, to rtx.Point3
+		up       rtx.Vector3
+		expected rtx.Matrix44
+	}{
+		// The transformation matrix for the default orientation.
+		{from: rtx.Point3{0, 0, 0}, to: rtx.Point3{0, 0, -1}, up: rtx.Vector3{0, 1, 0}, expected: rtx.Identity()},
+		// A view transformation matrix looking in positive z direction.
+		{from: rtx.Point3{0, 0, 0}, to: rtx.Point3{0, 0, 1}, up: rtx.Vector3{0, 1, 0}, expected: rtx.ScaleTransform(-1, 1, -1).M},
+		// The view transformation moves the world.
+		{from: rtx.Point3{0, 0, 8}, to: rtx.Point3{0, 0, 0}, up: rtx.Vector3{0, 1, 0}, expected: rtx.TranslateTransform(0, 0, -8).M},
+		// An arbitrary view transformation.
+		{from: rtx.Point3{1, 2, 3}, to: rtx.Point3{4, -2, 8}, up: rtx.Vector3{1, 1, 0}, expected: rtx.Matrix44{
+			-0.4999999999999999, 0.4999999999999999, 0.7, -2.5999999999999996,
+			0.7495331880577403, 0.6505382386916236, 0.07071067811865474, -2.2627416997969516,
+			-0.4242640687119285, 0.565685424949238, -0.7071067811865475, 1.414213562373095,
+			0, 0, 0, 1,
+		}},
+	} {
+		t.Run("", func(t *testing.T) {
+			got := rtx.LookAtTransform(tc.from, tc.to, tc.up).M
+			assert.True(t, rtx.Matrix44.Eq(tc.expected, got), fmt.Sprintf("expected: %v, got: %v", tc.expected, got))
+		})
+	}
+}
+
 // TestTransformRotateXTransform rotating a point around the x axis.
 func TestTransformRotateXTransform(t *testing.T) {
 	for _, tc := range []struct {

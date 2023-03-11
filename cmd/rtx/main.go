@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math"
 	"os"
 	"sergioffpc/rtx/pkg/rtx"
 )
@@ -9,35 +10,122 @@ import (
 func main() {
 	width, height := 1280, 720
 	film := rtx.NewFilm(width, height)
-	camera := rtx.NewCamera(width, height)
+	camera := rtx.NewCamera(width, height, math.Pi/3)
+	camera.LookAt(rtx.Point3{X: 0, Y: 1.5, Z: -5}, rtx.Point3{X: 0, Y: 1, Z: 0}, rtx.Vector3{X: 0, Y: 1, Z: 0})
 	scene := rtx.Scene{
 		Geometries: []rtx.GeometricPrimitive{
 			{
 				Shape: rtx.SphereShape{},
 				Material: rtx.PhongMaterial{
-					Ks:    0.9,
+					Ks:    0,
 					Kd:    0.9,
 					Ka:    0.1,
 					Alpha: 200,
-					Color: rtx.Spectrum{R: 0, G: 0, B: 1},
+					Color: rtx.Spectrum{R: 1, G: 0.9, B: 0.9},
+				},
+				ObjectToWorld: rtx.ScaleTransform(10, 0.01, 10),
+				WorldToObject: rtx.ScaleTransform(10, 0.01, 10).Inverse(),
+			},
+			{
+				Shape: rtx.SphereShape{},
+				Material: rtx.PhongMaterial{
+					Ks:    0,
+					Kd:    0.9,
+					Ka:    0.1,
+					Alpha: 200,
+					Color: rtx.Spectrum{R: 1, G: 0.9, B: 0.9},
+				},
+				ObjectToWorld: rtx.ChainTransform(
+					rtx.ScaleTransform(10, 0.01, 10),
+					rtx.RotateXTransform(math.Pi/2),
+					rtx.RotateYTransform(-math.Pi/4),
+					rtx.TranslateTransform(0, 0, 5),
+				),
+				WorldToObject: rtx.ChainTransform(
+					rtx.ScaleTransform(10, 0.01, 10),
+					rtx.RotateXTransform(math.Pi/2),
+					rtx.RotateYTransform(-math.Pi/4),
+					rtx.TranslateTransform(0, 0, 5),
+				).Inverse(),
+			},
+			{
+				Shape: rtx.SphereShape{},
+				Material: rtx.PhongMaterial{
+					Ks:    0,
+					Kd:    0.9,
+					Ka:    0.1,
+					Alpha: 200,
+					Color: rtx.Spectrum{R: 1, G: 0.9, B: 0.9},
+				},
+				ObjectToWorld: rtx.ChainTransform(
+					rtx.ScaleTransform(10, 0.01, 10),
+					rtx.RotateXTransform(math.Pi/2),
+					rtx.RotateYTransform(math.Pi/4),
+					rtx.TranslateTransform(0, 0, 5),
+				),
+				WorldToObject: rtx.ChainTransform(
+					rtx.ScaleTransform(10, 0.01, 10),
+					rtx.RotateXTransform(math.Pi/2),
+					rtx.RotateYTransform(math.Pi/4),
+					rtx.TranslateTransform(0, 0, 5),
+				).Inverse(),
+			},
+			{
+				Shape: rtx.SphereShape{},
+				Material: rtx.PhongMaterial{
+					Ks:    0.3,
+					Kd:    0.7,
+					Ka:    0.1,
+					Alpha: 200,
+					Color: rtx.Spectrum{R: 0.1, G: 1, B: 0.5},
+				},
+				ObjectToWorld: rtx.TranslateTransform(-0.5, 1, 0.5),
+				WorldToObject: rtx.TranslateTransform(-0.5, 1, 0.5).Inverse(),
+			},
+			{
+				Shape: rtx.SphereShape{},
+				Material: rtx.PhongMaterial{
+					Ks:    0.3,
+					Kd:    0.7,
+					Ka:    0.1,
+					Alpha: 200,
+					Color: rtx.Spectrum{R: 0.5, G: 1, B: 0.1},
 				},
 				ObjectToWorld: rtx.ChainTransform(
 					rtx.ScaleTransform(0.5, 0.5, 0.5),
-					rtx.TranslateTransform(0, 0, 1),
+					rtx.TranslateTransform(1.5, 0.5, -0.5),
 				),
 				WorldToObject: rtx.ChainTransform(
 					rtx.ScaleTransform(0.5, 0.5, 0.5),
-					rtx.TranslateTransform(0, 0, 1),
+					rtx.TranslateTransform(1.5, 0.5, -0.5),
+				).Inverse(),
+			},
+			{
+				Shape: rtx.SphereShape{},
+				Material: rtx.PhongMaterial{
+					Ks:    0.3,
+					Kd:    0.7,
+					Ka:    0.1,
+					Alpha: 200,
+					Color: rtx.Spectrum{R: 1, G: 0.8, B: 0.1},
+				},
+				ObjectToWorld: rtx.ChainTransform(
+					rtx.ScaleTransform(0.33, 0.33, 0.33),
+					rtx.TranslateTransform(-1.5, 0.33, -0.75),
+				),
+				WorldToObject: rtx.ChainTransform(
+					rtx.ScaleTransform(0.33, 0.33, 0.33),
+					rtx.TranslateTransform(-1.5, 0.33, -0.75),
 				).Inverse(),
 			},
 		},
 		Lights: []rtx.LightPrimitive{
 			{
 				Light: rtx.PointLight{
-					I: rtx.Spectrum{R: 1, G: 1, B: 1},
+					I: rtx.Spectrum{R: 100, G: 100, B: 100},
 				},
-				LightToWorld: rtx.TranslateTransform(1, 0, 0),
-				WorldToLight: rtx.TranslateTransform(1, 0, 0).Inverse(),
+				LightToWorld: rtx.TranslateTransform(-10, 10, -10),
+				WorldToLight: rtx.TranslateTransform(-10, 10, -10).Inverse(),
 			},
 		},
 	}

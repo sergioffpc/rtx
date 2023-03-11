@@ -299,6 +299,25 @@ func IdentityTransform() Transform {
 	}
 }
 
+func LookAtTransform(from, to Point3, up Vector3) Transform {
+	zAxis := Point3.Sub(to, from).Normalize()
+	xAxis := Vector3.Cross(zAxis, up.Normalize())
+	yAxis := Vector3.Cross(xAxis, zAxis)
+
+	attitude := Matrix44{
+		xAxis.X, xAxis.Y, xAxis.Z, 0,
+		yAxis.X, yAxis.Y, yAxis.Z, 0,
+		-zAxis.X, -zAxis.Y, -zAxis.Z, 0,
+		0, 0, 0, 1,
+	}
+	m := attitude.Mul(TranslateTransform(-from.X, -from.Y, -from.Z).M)
+
+	return Transform{
+		M:   m,
+		Inv: m.Inverse(),
+	}
+}
+
 func RotateXTransform(r float64) Transform {
 	return Transform{
 		M: Matrix44{
