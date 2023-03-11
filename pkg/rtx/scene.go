@@ -13,12 +13,6 @@ type Interaction struct {
 	Primitive *GeometricPrimitive
 }
 
-func (i Interaction) Shade(l LightPrimitive) Spectrum {
-	lP := Point3{}.Transform(l.LightToWorld)
-	wi := Point3.Sub(lP, i.P).Normalize()
-	return i.Primitive.F(i.P, i.N, wi, i.Wo, l.Li(i.P), i.T)
-}
-
 type GeometricPrimitive struct {
 	Shape         Shape
 	Material      Material
@@ -71,4 +65,13 @@ func (s Scene) Intersect(r Ray) (ok bool, nearest Interaction) {
 	}
 
 	return ok, nearest
+}
+
+func (s Scene) IntersectP(r Ray) bool {
+	for _, g := range s.Geometries {
+		if g.Shape.IntersectP(r.Transform(g.WorldToObject)) {
+			return true
+		}
+	}
+	return false
 }

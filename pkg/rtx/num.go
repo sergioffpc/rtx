@@ -2,7 +2,7 @@ package rtx
 
 import "math"
 
-const Epsilon = 2.220446049250313e-16
+const Epsilon float64 = 2.2204460e-8
 
 func Clamp(f, lo, hi float64) float64 {
 	switch {
