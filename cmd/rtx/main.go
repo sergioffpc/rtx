@@ -15,7 +15,7 @@ func main() {
 	scene := rtx.Scene{
 		Geometries: []rtx.GeometricPrimitive{
 			{
-				Shape: rtx.SphereShape{},
+				Shape: rtx.PlaneShape{},
 				Material: rtx.PhongMaterial{
 					Ks:    0,
 					Kd:    0.9,
@@ -23,52 +23,8 @@ func main() {
 					Alpha: 200,
 					Color: rtx.Spectrum{R: 1, G: 0.9, B: 0.9},
 				},
-				ObjectToWorld: rtx.ScaleTransform(10, 0.01, 10),
-				WorldToObject: rtx.ScaleTransform(10, 0.01, 10).Inverse(),
-			},
-			{
-				Shape: rtx.SphereShape{},
-				Material: rtx.PhongMaterial{
-					Ks:    0,
-					Kd:    0.9,
-					Ka:    0.1,
-					Alpha: 200,
-					Color: rtx.Spectrum{R: 1, G: 0.9, B: 0.9},
-				},
-				ObjectToWorld: rtx.ChainTransform(
-					rtx.ScaleTransform(10, 0.01, 10),
-					rtx.RotateXTransform(math.Pi/2),
-					rtx.RotateYTransform(-math.Pi/4),
-					rtx.TranslateTransform(0, 0, 5),
-				),
-				WorldToObject: rtx.ChainTransform(
-					rtx.ScaleTransform(10, 0.01, 10),
-					rtx.RotateXTransform(math.Pi/2),
-					rtx.RotateYTransform(-math.Pi/4),
-					rtx.TranslateTransform(0, 0, 5),
-				).Inverse(),
-			},
-			{
-				Shape: rtx.SphereShape{},
-				Material: rtx.PhongMaterial{
-					Ks:    0,
-					Kd:    0.9,
-					Ka:    0.1,
-					Alpha: 200,
-					Color: rtx.Spectrum{R: 1, G: 0.9, B: 0.9},
-				},
-				ObjectToWorld: rtx.ChainTransform(
-					rtx.ScaleTransform(10, 0.01, 10),
-					rtx.RotateXTransform(math.Pi/2),
-					rtx.RotateYTransform(math.Pi/4),
-					rtx.TranslateTransform(0, 0, 5),
-				),
-				WorldToObject: rtx.ChainTransform(
-					rtx.ScaleTransform(10, 0.01, 10),
-					rtx.RotateXTransform(math.Pi/2),
-					rtx.RotateYTransform(math.Pi/4),
-					rtx.TranslateTransform(0, 0, 5),
-				).Inverse(),
+				ObjectToWorld: rtx.IdentityTransform(),
+				WorldToObject: rtx.IdentityTransform().Inverse(),
 			},
 			{
 				Shape: rtx.SphereShape{},

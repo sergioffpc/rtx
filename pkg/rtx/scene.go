@@ -69,7 +69,7 @@ func (s Scene) Intersect(r Ray) (ok bool, nearest Interaction) {
 
 func (s Scene) IntersectP(r Ray) bool {
 	for _, g := range s.Geometries {
-		if g.Shape.IntersectP(r.Transform(g.WorldToObject)) {
+		if ok, _ := g.Shape.IntersectP(r.Transform(g.WorldToObject)); ok {
 			return true
 		}
 	}
