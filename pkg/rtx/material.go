@@ -15,12 +15,13 @@ type PhongMaterial struct {
 	Ka float64
 	// Alpha is a shininess constant.
 	Alpha float64
-	// Color is the surface color.
-	Color Spectrum
+	// Tex is the surface texture.
+	Tex Texture
 }
 
 func (m PhongMaterial) F(p Point3, n Normal3, wo Vector3, uv Point2, wi Vector3, i Spectrum) Spectrum {
-	f := Spectrum.MulFloat(i, m.Ka).Mul(m.Color)
+	s := m.Tex.D(p, uv)
+	f := Spectrum.MulFloat(i, m.Ka).Mul(s)
 
 	wiDn := Vector3.Dot(wi, Vector3(n))
 	if wiDn <= 0 {
@@ -28,7 +29,7 @@ func (m PhongMaterial) F(p Point3, n Normal3, wo Vector3, uv Point2, wi Vector3,
 	}
 
 	d := m.Kd * wiDn
-	f.AddAssign(Spectrum.MulFloat(i, d).Mul(m.Color))
+	f.AddAssign(Spectrum.MulFloat(i, d).Mul(s))
 
 	woDr := Vector3.Dot(wo, Vector3.Reflect(wi.Neg(), n))
 	if woDr > 0 {

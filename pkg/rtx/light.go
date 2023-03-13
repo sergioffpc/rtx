@@ -9,6 +9,6 @@ type PointLight struct {
 }
 
 func (l PointLight) Li(p Point3) Spectrum {
-	f := Point3.DistanceSq(p, Point3{})
-	return Spectrum.DivFloat(l.I, f)
+	distanceSq := Point3.DistanceSq(p, Point3{})
+	return Spectrum.DivFloat(l.I, distanceSq)
 }

@@ -10,24 +10,24 @@ func (w Whitted) Render(scene *Scene, ray Ray) Spectrum {
 	var li Spectrum
 	if ok, isect := scene.Intersect(ray); ok {
 		for _, l := range scene.Lights {
-			lightP := Point3{}.Transform(l.LightToWorld)
-
-			hitLightV := Point3.Sub(lightP, isect.P)
-			shadowR := Ray{
-				// Slighty bump above the surface in the direction of the
-				// normal to prevent self-shadowing.
-				O:    Point3.Add(isect.P, Point3(isect.N).MulFloat(Epsilon)),
-				D:    hitLightV.Normalize(),
-				TMax: hitLightV.Len(),
+			light := l
+			if w.isIlluminated(scene, isect, light) {
+				li.AddAssign(isect.F(light))
 			}
-			if scene.IntersectP(shadowR) {
-				continue
-			}
-
-			f := isect.F(l)
-			li.AddAssign(f)
 		}
 	}
 
 	return li
+}
+
+func (Whitted) isIlluminated(scene *Scene, isect Interaction, primitive LightPrimitive) bool {
+	p := Point3{}.Transform(primitive.LightToWorld)
+	wi := Point3.Sub(p, isect.P)
+	return !scene.IntersectP(Ray{
+		// Slighty bump above the surface in the direction of the
+		// normal to prevent self-shadowing.
+		O:    Point3.Add(isect.P, Point3(isect.N).MulFloat(Epsilon)),
+		D:    wi.Normalize(),
+		TMax: wi.Len(),
+	})
 }

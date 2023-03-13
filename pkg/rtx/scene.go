@@ -15,14 +15,17 @@ type Interaction struct {
 	Primitive *GeometricPrimitive
 }
 
-func (i Interaction) F(l LightPrimitive) Spectrum {
+func (i Interaction) F(primitive LightPrimitive) Spectrum {
+	p := Point3{}.Transform(primitive.LightToWorld)
+	wi := Point3.Sub(p, i.P).Normalize()
+
 	return i.Primitive.Material.F(
 		i.P.Transform(i.Primitive.WorldToObject),
 		i.N.Transform(i.Primitive.WorldToObject),
-		i.Wo,
+		i.Wo.Transform(i.Primitive.WorldToObject).Normalize(),
 		i.Uv,
-		Point3.Sub(Point3{}.Transform(l.LightToWorld), i.P).Normalize(),
-		l.Li(i.P),
+		wi.Transform(i.Primitive.WorldToObject).Normalize(),
+		primitive.Li(i.P),
 	)
 }
 
@@ -33,13 +36,13 @@ type GeometricPrimitive struct {
 	WorldToObject Transform
 }
 
-func (g *GeometricPrimitive) intersect(r Ray) (ok bool, isect Interaction) {
-	if hit, hP, hN, hT := g.Shape.Intersect(r.Transform(g.WorldToObject)); hit {
+func (g *GeometricPrimitive) intersect(ray Ray) (ok bool, isect Interaction) {
+	if hit, hP, hN, hT := g.Shape.Intersect(ray.Transform(g.WorldToObject)); hit {
 		ok = true
 		isect = Interaction{
 			P:         hP.Transform(g.ObjectToWorld),
 			N:         hN.Transform(g.ObjectToWorld),
-			Wo:        r.D.Neg(),
+			Wo:        ray.D.Neg(),
 			T:         hT,
 			Primitive: g,
 		}
@@ -63,11 +66,11 @@ type Scene struct {
 	Lights     []LightPrimitive
 }
 
-func (s Scene) Intersect(r Ray) (ok bool, nearest Interaction) {
+func (s Scene) Intersect(ray Ray) (ok bool, nearest Interaction) {
 	for _, g := range s.Geometries {
-		p := g
-		if hit, isect := p.intersect(r); hit {
-			r.TMax = isect.T
+		geometry := g
+		if hit, isect := geometry.intersect(ray); hit {
+			ray.TMax = isect.T
 			ok = true
 			nearest = isect
 		}
@@ -76,9 +79,10 @@ func (s Scene) Intersect(r Ray) (ok bool, nearest Interaction) {
 	return ok, nearest
 }
 
-func (s Scene) IntersectP(r Ray) bool {
+func (s Scene) IntersectP(ray Ray) bool {
 	for _, g := range s.Geometries {
-		if ok, _ := g.Shape.IntersectP(r.Transform(g.WorldToObject)); ok {
+		geometry := g
+		if ok, _ := geometry.Shape.IntersectP(ray.Transform(geometry.WorldToObject)); ok {
 			return true
 		}
 	}

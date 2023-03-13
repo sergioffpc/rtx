@@ -23,7 +23,7 @@ func main() {
 					Kd:    0.9,
 					Ka:    0.1,
 					Alpha: 200,
-					Color: rtx.Spectrum{R: 1, G: 0.9, B: 0.9},
+					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
 				ObjectToWorld: rtx.IdentityTransform(),
 				WorldToObject: rtx.IdentityTransform().Inverse(),
@@ -35,10 +35,16 @@ func main() {
 					Kd:    0.7,
 					Ka:    0.1,
 					Alpha: 200,
-					Color: rtx.Spectrum{R: 0.1, G: 1, B: 0.5},
+					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
-				ObjectToWorld: rtx.TranslateTransform(-0.5, 1, 0.5),
-				WorldToObject: rtx.TranslateTransform(-0.5, 1, 0.5).Inverse(),
+				ObjectToWorld: rtx.ChainTransform(
+					rtx.RotateYTransform(math.Pi/4),
+					rtx.TranslateTransform(-0.5, 1, 0.5),
+				),
+				WorldToObject: rtx.ChainTransform(
+					rtx.RotateYTransform(math.Pi/4),
+					rtx.TranslateTransform(-0.5, 1, 0.5),
+				).Inverse(),
 			},
 			{
 				Shape: rtx.SphereShape{},
@@ -47,7 +53,7 @@ func main() {
 					Kd:    0.7,
 					Ka:    0.1,
 					Alpha: 200,
-					Color: rtx.Spectrum{R: 0.5, G: 1, B: 0.1},
+					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
 				ObjectToWorld: rtx.ChainTransform(
 					rtx.ScaleTransform(0.5, 0.5, 0.5),
@@ -65,7 +71,7 @@ func main() {
 					Kd:    0.7,
 					Ka:    0.1,
 					Alpha: 200,
-					Color: rtx.Spectrum{R: 1, G: 0.8, B: 0.1},
+					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
 				ObjectToWorld: rtx.ChainTransform(
 					rtx.ScaleTransform(0.33, 0.33, 0.33),
