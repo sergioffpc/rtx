@@ -9,8 +9,21 @@ type Interaction struct {
 	Wo Vector3
 	// T is the time of intersection.
 	T float64
+	// Uv is the two-dimensional texture coordinate.
+	Uv Point2
 	// Primitive points to the geometric primitive intersectect by the ray.
 	Primitive *GeometricPrimitive
+}
+
+func (i Interaction) F(l LightPrimitive) Spectrum {
+	return i.Primitive.Material.F(
+		i.P.Transform(i.Primitive.WorldToObject),
+		i.N.Transform(i.Primitive.WorldToObject),
+		i.Wo,
+		i.Uv,
+		Point3.Sub(Point3{}.Transform(l.LightToWorld), i.P).Normalize(),
+		l.Li(i.P),
+	)
 }
 
 type GeometricPrimitive struct {
@@ -18,10 +31,6 @@ type GeometricPrimitive struct {
 	Material      Material
 	ObjectToWorld Transform
 	WorldToObject Transform
-}
-
-func (g GeometricPrimitive) F(p Point3, n Normal3, wi, wo Vector3, i Spectrum, t float64) Spectrum {
-	return g.Material.F(p.Transform(g.WorldToObject), n.Transform(g.WorldToObject), wi, wo, i, t)
 }
 
 func (g *GeometricPrimitive) intersect(r Ray) (ok bool, isect Interaction) {

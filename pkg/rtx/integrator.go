@@ -24,8 +24,7 @@ func (w Whitted) Render(scene *Scene, ray Ray) Spectrum {
 				continue
 			}
 
-			wi := Point3.Sub(lightP, isect.P).Normalize()
-			f := isect.Primitive.F(isect.P, isect.N, wi, isect.Wo, l.Li(isect.P), isect.T)
+			f := isect.F(l)
 			li.AddAssign(f)
 		}
 	}

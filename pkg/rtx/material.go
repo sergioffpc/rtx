@@ -3,7 +3,7 @@ package rtx
 import "math"
 
 type Material interface {
-	F(p Point3, n Normal3, wi, wo Vector3, i Spectrum, t float64) Spectrum
+	F(p Point3, n Normal3, wo Vector3, uv Point2, wi Vector3, i Spectrum) Spectrum
 }
 
 type PhongMaterial struct {
@@ -19,7 +19,7 @@ type PhongMaterial struct {
 	Color Spectrum
 }
 
-func (m PhongMaterial) F(p Point3, n Normal3, wi, wo Vector3, i Spectrum, t float64) Spectrum {
+func (m PhongMaterial) F(p Point3, n Normal3, wo Vector3, uv Point2, wi Vector3, i Spectrum) Spectrum {
 	f := Spectrum.MulFloat(i, m.Ka).Mul(m.Color)
 
 	wiDn := Vector3.Dot(wi, Vector3(n))

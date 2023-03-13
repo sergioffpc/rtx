@@ -44,6 +44,44 @@ func (n *Normal3) SubAssign(m Normal3) {
 	n.Z -= m.Z
 }
 
+type Point2 struct{ X, Y float64 }
+
+func (p Point2) Add(q Point2) Point2 { return Point2{X: p.X + q.X, Y: p.Y + q.Y} }
+
+func (p Point2) AddVector(v Vector2) Point2 {
+	return Point2{X: p.X + v.X, Y: p.Y + v.Y}
+}
+
+func (p *Point2) AddAssign(q Point2) {
+	p.X += q.X
+	p.Y += q.Y
+}
+
+func (p Point2) Distance(q Point2) float64 { return Point2.Sub(p, q).Len() }
+
+func (p Point2) DistanceSq(q Point2) float64 { return Point2.Sub(p, q).LenSq() }
+
+func (p *Point2) DivAssignFloat(f float64) { p.MulAssignFloat(f) }
+
+func (p Point2) DivFloat(f float64) Point2 { return Point2.MulFloat(p, 1/f) }
+
+func (p Point2) Eq(q Point2) bool {
+	return EqualFloat(p.X, q.X) && EqualFloat(p.Y, q.Y)
+}
+
+func (p *Point2) MulAssignFloat(f float64) {
+	p.X *= f
+	p.Y *= f
+}
+
+func (p Point2) MulFloat(f float64) Point2 { return Point2{X: p.X * f, Y: p.Y * f} }
+
+func (p Point2) Neg() Point2 { return Point2.MulFloat(p, -1) }
+
+func (p Point2) Sub(q Point2) Vector2 { return Vector2{X: p.X - q.X, Y: p.Y - q.Y} }
+
+func (p Point2) SubVector(v Vector2) Point2 { return Point2{X: p.X - v.X, Y: p.Y - v.Y} }
+
 type Point3 struct{ X, Y, Z float64 }
 
 func (p Point3) Add(q Point3) Point3 { return Point3{X: p.X + q.X, Y: p.Y + q.Y, Z: p.Z + q.Z} }
@@ -93,6 +131,47 @@ func (r Ray) Eq(s Ray) bool {
 }
 
 func (r Ray) Position(t float64) Point3 { return Point3.AddVector(r.O, Vector3.MulFloat(r.D, t)) }
+
+type Vector2 struct{ X, Y float64 }
+
+func (v Vector2) Add(u Vector2) Vector2 { return Vector2{X: v.X + u.X, Y: v.Y + u.Y} }
+
+func (v *Vector2) AddAssign(u Vector2) {
+	v.X += u.X
+	v.Y += u.Y
+}
+
+func (v *Vector2) DivAssignFloat(f float64) { v.MulAssignFloat(f) }
+
+func (v Vector2) DivFloat(f float64) Vector2 { return Vector2.MulFloat(v, 1/f) }
+
+func (v Vector2) Dot(u Vector2) float64 { return v.X*u.X + v.Y*u.Y }
+
+func (v Vector2) Eq(u Vector2) bool {
+	return EqualFloat(v.X, u.X) && EqualFloat(v.Y, u.Y)
+}
+
+func (v Vector2) Len() float64 { return math.Sqrt(v.LenSq()) }
+
+func (v Vector2) LenSq() float64 { return Vector2.Dot(v, v) }
+
+func (v *Vector2) MulAssignFloat(f float64) {
+	v.X *= f
+	v.Y *= f
+}
+
+func (v Vector2) MulFloat(f float64) Vector2 { return Vector2{X: v.X * f, Y: v.Y * f} }
+
+func (v Vector2) Neg() Vector2 { return Vector2.MulFloat(v, -1) }
+
+func (v Vector2) Normalize() Vector2 { return Vector2.DivFloat(v, v.Len()) }
+
+func (v Vector2) Sub(u Vector2) Vector2 { return Vector2{X: v.X - u.X, Y: v.Y - u.Y} }
+
+func (v *Vector2) SubAssign(u Vector2) {
+	v.X -= u.X
+	v.Y -= u.Y
+}
 
 type Vector3 struct{ X, Y, Z float64 }
 
