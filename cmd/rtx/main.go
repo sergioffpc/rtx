@@ -5,6 +5,8 @@ import (
 	"math"
 	"os"
 	"sergioffpc/rtx/pkg/rtx"
+
+	"github.com/schollz/progressbar/v3"
 )
 
 func main() {
@@ -87,8 +89,10 @@ func main() {
 	}
 	integrator := rtx.Whitted{}
 
+	pb := progressbar.Default(int64(height * width))
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
+			pb.Add(1)
 			r := camera.GenerateRay(x, y)
 			l := integrator.Render(&scene, r)
 			film.Set(x, y, l)
