@@ -2,20 +2,25 @@ package rtx
 
 import "math"
 
-type Camera struct {
+type Camera interface {
+	GenerateRay(x, y int) Ray
+	LookAt(from, to Point3, up Vector3)
+}
+
+type PerspectiveCamera struct {
 	halfWidth, halfHeight   float64
 	pixelWidth, pixelHeight float64
 	transform               Transform
 }
 
-func NewCamera(width, height int, fov float64) Camera {
+func NewPerspectiveCamera(width, height int, fov float64) PerspectiveCamera {
 	halfWidth := math.Tan(fov / 2)
 	halfHeight := halfWidth / (float64(width) / float64(height))
 
 	pixelWidth := (halfWidth * 2) / float64(width)
 	pixelHeight := (halfHeight * 2) / float64(height)
 
-	return Camera{
+	return PerspectiveCamera{
 		halfWidth:   halfWidth,
 		halfHeight:  halfHeight,
 		pixelWidth:  pixelWidth,
@@ -24,7 +29,7 @@ func NewCamera(width, height int, fov float64) Camera {
 	}
 }
 
-func (c Camera) GenerateRay(x, y int) Ray {
+func (c PerspectiveCamera) GenerateRay(x, y int) Ray {
 	cx := c.halfWidth - (float64(x)+0.5)*c.pixelWidth
 	cy := c.halfHeight - (float64(y)+0.5)*c.pixelHeight
 
@@ -37,6 +42,6 @@ func (c Camera) GenerateRay(x, y int) Ray {
 	}
 }
 
-func (c *Camera) LookAt(from, to Point3, up Vector3) {
+func (c *PerspectiveCamera) LookAt(from, to Point3, up Vector3) {
 	c.transform = LookAtTransform(from, to, up)
 }

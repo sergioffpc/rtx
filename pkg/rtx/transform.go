@@ -319,53 +319,41 @@ func LookAtTransform(from, to Point3, up Vector3) Transform {
 }
 
 func RotateXTransform(r float64) Transform {
+	rx := Matrix44{
+		1, 0, 0, 0,
+		0, math.Cos(r), -math.Sin(r), 0,
+		0, math.Sin(r), math.Cos(r), 0,
+		0, 0, 0, 1,
+	}
 	return Transform{
-		M: Matrix44{
-			1, 0, 0, 0,
-			0, math.Cos(r), -math.Sin(r), 0,
-			0, math.Sin(r), math.Cos(r), 0,
-			0, 0, 0, 1,
-		},
-		Inv: Matrix44{
-			1, 0, 0, 0,
-			0, math.Cos(-r), -math.Sin(-r), 0,
-			0, math.Sin(-r), math.Cos(-r), 0,
-			0, 0, 0, 1,
-		},
+		M:   rx,
+		Inv: rx.Inverse(),
 	}
 }
 
 func RotateYTransform(r float64) Transform {
+	ry := Matrix44{
+		math.Cos(r), 0, math.Sin(r), 0,
+		0, 1, 0, 0,
+		-math.Sin(r), 0, math.Cos(r), 0,
+		0, 0, 0, 1,
+	}
 	return Transform{
-		M: Matrix44{
-			math.Cos(r), 0, math.Sin(r), 0,
-			0, 1, 0, 0,
-			-math.Sin(r), 0, math.Cos(r), 0,
-			0, 0, 0, 1,
-		},
-		Inv: Matrix44{
-			math.Cos(-r), 0, math.Sin(-r), 0,
-			0, 1, 0, 0,
-			-math.Sin(-r), 0, math.Cos(-r), 0,
-			0, 0, 0, 1,
-		},
+		M:   ry,
+		Inv: ry.Inverse(),
 	}
 }
 
 func RotateZTransform(r float64) Transform {
+	rz := Matrix44{
+		math.Cos(r), -math.Sin(r), 0, 0,
+		math.Sin(r), math.Cos(r), 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}
 	return Transform{
-		M: Matrix44{
-			math.Cos(r), -math.Sin(r), 0, 0,
-			math.Sin(r), math.Cos(r), 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 1,
-		},
-		Inv: Matrix44{
-			math.Cos(-r), 0, math.Sin(-r), 0,
-			0, 1, 0, 0,
-			-math.Sin(-r), 0, math.Cos(-r), 0,
-			0, 0, 0, 1,
-		},
+		M:   rz,
+		Inv: rz.Inverse(),
 	}
 }
 

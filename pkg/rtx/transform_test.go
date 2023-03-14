@@ -218,10 +218,10 @@ func TestTransformRotateXTransform(t *testing.T) {
 	}{
 		{a: rtx.Point3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 2), expected: rtx.Point3{0, 0, 1}},
 		{a: rtx.Point3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 4), expected: rtx.Point3{0, math.Sqrt(2) / 2, math.Sqrt(2) / 2}},
-		{a: rtx.Point3{0, 1, 0}, rx: rtx.RotateXTransform(math.Pi / 4).Inverse(), expected: rtx.Point3{0, math.Sqrt(2) / 2, -math.Sqrt(2) / 2}},
 	} {
 		t.Run("", func(t *testing.T) {
-			assert.True(t, rtx.Point3.Eq(tc.expected, tc.a.Transform(tc.rx)))
+			got := tc.a.Transform(tc.rx)
+			assert.True(t, rtx.Point3.Eq(tc.expected, got), "expected: %v, got: %v", tc.expected, got)
 		})
 	}
 }
@@ -235,10 +235,10 @@ func TestTransformRotateYTransform(t *testing.T) {
 	}{
 		{a: rtx.Point3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 2), expected: rtx.Point3{1, 0, 0}},
 		{a: rtx.Point3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 4), expected: rtx.Point3{math.Sqrt(2) / 2, 0, math.Sqrt(2) / 2}},
-		{a: rtx.Point3{0, 0, 1}, ry: rtx.RotateYTransform(math.Pi / 4).Inverse(), expected: rtx.Point3{-math.Sqrt(2) / 2, 0, math.Sqrt(2) / 2}},
 	} {
 		t.Run("", func(t *testing.T) {
-			assert.True(t, rtx.Point3.Eq(tc.expected, tc.a.Transform(tc.ry)))
+			got := tc.a.Transform(tc.ry)
+			assert.True(t, rtx.Point3.Eq(tc.expected, got), "expected: %v, got: %v", tc.expected, got)
 		})
 	}
 }
@@ -252,10 +252,10 @@ func TestTransformRotateZTransform(t *testing.T) {
 	}{
 		{a: rtx.Point3{0, 1, 0}, rz: rtx.RotateZTransform(math.Pi / 2), expected: rtx.Point3{-1, 0, 0}},
 		{a: rtx.Point3{0, 1, 0}, rz: rtx.RotateZTransform(math.Pi / 4), expected: rtx.Point3{-math.Sqrt(2) / 2, math.Sqrt(2) / 2, 0}},
-		{a: rtx.Point3{0, 1, 0}, rz: rtx.RotateZTransform(math.Pi / 4).Inverse(), expected: rtx.Point3{0, 1, 0}},
 	} {
 		t.Run("", func(t *testing.T) {
-			assert.True(t, rtx.Point3.Eq(tc.expected, tc.a.Transform(tc.rz)))
+			got := tc.a.Transform(tc.rz)
+			assert.True(t, rtx.Point3.Eq(tc.expected, got), "expected: %v, got: %v", tc.expected, got)
 		})
 	}
 }

@@ -16,20 +16,22 @@ type Interaction struct {
 }
 
 func (i Interaction) F(primitive LightPrimitive) Spectrum {
-	p := Point3{}.Transform(primitive.LightToWorld)
-	wi := Point3.Sub(p, i.P).Normalize()
+	lightPos := Point3{}.Transform(primitive.LightToWorld)
+	wi := Point3.Sub(lightPos, i.P).Normalize()
+	li := primitive.Li(i.P)
 
 	return i.Primitive.Material.F(
 		i.P.Transform(i.Primitive.WorldToObject),
-		i.N.Transform(i.Primitive.WorldToObject),
+		i.N.Transform(i.Primitive.WorldToObject).Normalize(),
 		i.Wo.Transform(i.Primitive.WorldToObject).Normalize(),
 		i.Uv,
 		wi.Transform(i.Primitive.WorldToObject).Normalize(),
-		primitive.Li(i.P),
+		li,
 	)
 }
 
 type GeometricPrimitive struct {
+	Label         string
 	Shape         Shape
 	Material      Material
 	ObjectToWorld Transform
@@ -52,6 +54,7 @@ func (g *GeometricPrimitive) intersect(ray Ray) (ok bool, isect Interaction) {
 }
 
 type LightPrimitive struct {
+	Label        string
 	Light        Light
 	LightToWorld Transform
 	WorldToLight Transform

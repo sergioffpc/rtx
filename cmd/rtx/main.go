@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"math"
 	"os"
@@ -10,13 +11,19 @@ import (
 )
 
 func main() {
-	width, height := 1280, 720
-	film := rtx.NewFilm(width, height)
-	camera := rtx.NewCamera(width, height, math.Pi/3)
+	var width, height int
+
+	flag.IntVar(&width, "width", 640, "image width resolution in pixels")
+	flag.IntVar(&height, "height", 360, "image height resolution in pixels")
+	flag.Parse()
+
+	film := rtx.NewImageFilm(width, height)
+	camera := rtx.NewPerspectiveCamera(width, height, math.Pi/3)
 	camera.LookAt(rtx.Point3{X: 0, Y: 1.5, Z: -5}, rtx.Point3{X: 0, Y: 1, Z: 0}, rtx.Vector3{X: 0, Y: 1, Z: 0})
 	scene := rtx.Scene{
 		Geometries: []rtx.GeometricPrimitive{
 			{
+				Label: "floor",
 				Shape: rtx.PlaneShape{},
 				Material: rtx.PhongMaterial{
 					Ks:    0,
@@ -29,6 +36,7 @@ func main() {
 				WorldToObject: rtx.IdentityTransform().Inverse(),
 			},
 			{
+				Label: "ball at center",
 				Shape: rtx.SphereShape{},
 				Material: rtx.PhongMaterial{
 					Ks:    0.3,
@@ -38,15 +46,16 @@ func main() {
 					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
 				ObjectToWorld: rtx.ChainTransform(
-					rtx.RotateYTransform(math.Pi/4),
+					rtx.RotateZTransform(math.Pi/4),
 					rtx.TranslateTransform(-0.5, 1, 0.5),
 				),
 				WorldToObject: rtx.ChainTransform(
-					rtx.RotateYTransform(math.Pi/4),
+					rtx.RotateZTransform(math.Pi/4),
 					rtx.TranslateTransform(-0.5, 1, 0.5),
 				).Inverse(),
 			},
 			{
+				Label: "ball at right",
 				Shape: rtx.SphereShape{},
 				Material: rtx.PhongMaterial{
 					Ks:    0.3,
@@ -65,6 +74,7 @@ func main() {
 				).Inverse(),
 			},
 			{
+				Label: "ball at left",
 				Shape: rtx.SphereShape{},
 				Material: rtx.PhongMaterial{
 					Ks:    0.3,
@@ -85,6 +95,7 @@ func main() {
 		},
 		Lights: []rtx.LightPrimitive{
 			{
+				Label: "point light",
 				Light: rtx.PointLight{
 					I: rtx.Spectrum{R: 100, G: 100, B: 100},
 				},
