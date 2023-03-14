@@ -13,8 +13,8 @@ import (
 func main() {
 	var width, height int
 
-	flag.IntVar(&width, "width", 640, "image width resolution in pixels")
-	flag.IntVar(&height, "height", 360, "image height resolution in pixels")
+	flag.IntVar(&width, "width", 1280, "image width resolution in pixels")
+	flag.IntVar(&height, "height", 720, "image height resolution in pixels")
 	flag.Parse()
 
 	film := rtx.NewImageFilm(width, height)
@@ -30,7 +30,7 @@ func main() {
 					Kd:    0.9,
 					Ka:    0.1,
 					Alpha: 200,
-					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
+					Tex:   rtx.RingTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
 				ObjectToWorld: rtx.IdentityTransform(),
 				WorldToObject: rtx.IdentityTransform().Inverse(),
@@ -43,7 +43,7 @@ func main() {
 					Kd:    0.7,
 					Ka:    0.1,
 					Alpha: 200,
-					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
+					Tex:   rtx.CheckerTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
 				ObjectToWorld: rtx.ChainTransform(
 					rtx.RotateZTransform(math.Pi/4),
@@ -81,14 +81,16 @@ func main() {
 					Kd:    0.7,
 					Ka:    0.1,
 					Alpha: 200,
-					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
+					Tex:   rtx.GradientTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
 				ObjectToWorld: rtx.ChainTransform(
 					rtx.ScaleTransform(0.33, 0.33, 0.33),
+					rtx.RotateZTransform(math.Pi/2),
 					rtx.TranslateTransform(-1.5, 0.33, -0.75),
 				),
 				WorldToObject: rtx.ChainTransform(
 					rtx.ScaleTransform(0.33, 0.33, 0.33),
+					rtx.RotateZTransform(math.Pi/2),
 					rtx.TranslateTransform(-1.5, 0.33, -0.75),
 				).Inverse(),
 			},

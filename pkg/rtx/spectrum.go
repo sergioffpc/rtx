@@ -22,6 +22,10 @@ func (s Spectrum) Eq(t Spectrum) bool {
 	return EqualFloat(s.R, t.R) && EqualFloat(s.G, t.G) && EqualFloat(s.B, t.B)
 }
 
+func (s Spectrum) Lerp(t Spectrum, f float64) Spectrum {
+	return Spectrum.Add(s.MulFloat(1-f), t.MulFloat(f))
+}
+
 func (s Spectrum) Mul(t Spectrum) Spectrum { return Spectrum{R: s.R * t.R, G: s.G * t.G, B: s.B * t.B} }
 
 func (s Spectrum) MulFloat(f float64) Spectrum { return Spectrum{R: s.R * f, G: s.G * f, B: s.B * f} }
