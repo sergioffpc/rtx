@@ -1,31 +1,28 @@
-package rtx
+package film
 
 import (
 	"image"
 	"image/color"
 	"image/png"
 	"io"
-)
 
-type Film interface {
-	Set(x, y int, s Spectrum)
-	Write(w io.Writer)
-}
+	crtx "sergioffpc/rtx/pkg/rtx/color"
+)
 
 type ImageFilm struct {
 	width, height int
-	pixels        []Spectrum
+	pixels        []crtx.Spectrum
 }
 
 func NewImageFilm(width, height int) ImageFilm {
 	return ImageFilm{
 		width:  width,
 		height: height,
-		pixels: make([]Spectrum, width*height),
+		pixels: make([]crtx.Spectrum, width*height),
 	}
 }
 
-func (f ImageFilm) Set(x, y int, s Spectrum) {
+func (f ImageFilm) Set(x, y int, s crtx.Spectrum) {
 	f.pixels[f.at(x, y)] = s
 }
 
@@ -34,7 +31,7 @@ func (f ImageFilm) Write(w io.Writer) error {
 
 	for y := 0; y < f.height; y++ {
 		for x := 0; x < f.width; x++ {
-			s := Spectrum.Clamp(f.get(x, y), 0, 1)
+			s := crtx.Spectrum.Clamp(f.get(x, y), 0, 1)
 			img.Set(x, y, color.NRGBA{
 				R: uint8(s.R * 255),
 				G: uint8(s.G * 255),
@@ -47,6 +44,6 @@ func (f ImageFilm) Write(w io.Writer) error {
 	return png.Encode(w, img)
 }
 
-func (f ImageFilm) get(x, y int) Spectrum { return f.pixels[f.at(x, y)] }
+func (f ImageFilm) get(x, y int) crtx.Spectrum { return f.pixels[f.at(x, y)] }
 
 func (f ImageFilm) at(x, y int) int { return y*f.width + x }

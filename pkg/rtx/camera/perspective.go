@@ -1,16 +1,14 @@
-package rtx
+package camera
 
-import "math"
-
-type Camera interface {
-	GenerateRay(x, y int) Ray
-	LookAt(from, to Point3, up Vector3)
-}
+import (
+	"math"
+	"sergioffpc/rtx/pkg/rtx/cgmath"
+)
 
 type PerspectiveCamera struct {
 	halfWidth, halfHeight   float64
 	pixelWidth, pixelHeight float64
-	transform               Transform
+	transform               cgmath.Transform
 }
 
 func NewPerspectiveCamera(width, height int, fov float64) PerspectiveCamera {
@@ -25,23 +23,23 @@ func NewPerspectiveCamera(width, height int, fov float64) PerspectiveCamera {
 		halfHeight:  halfHeight,
 		pixelWidth:  pixelWidth,
 		pixelHeight: pixelHeight,
-		transform:   IdentityTransform(),
+		transform:   cgmath.IdentityTransform(),
 	}
 }
 
-func (c PerspectiveCamera) GenerateRay(x, y int) Ray {
+func (c PerspectiveCamera) GenerateRay(x, y int) cgmath.Ray {
 	cx := c.halfWidth - (float64(x)+0.5)*c.pixelWidth
 	cy := c.halfHeight - (float64(y)+0.5)*c.pixelHeight
 
-	o := Point3{}.Transform(c.transform.Inverse())
-	px := Point3{X: cx, Y: cy, Z: -1}.Transform(c.transform.Inverse())
-	return Ray{
+	o := cgmath.Point3{}.Transform(c.transform.Inverse())
+	px := cgmath.Point3{X: cx, Y: cy, Z: -1}.Transform(c.transform.Inverse())
+	return cgmath.Ray{
 		O:    o,
-		D:    Point3.Sub(px, o).Normalize(),
+		D:    cgmath.Point3.Sub(px, o).Normalize(),
 		TMax: math.MaxFloat64,
 	}
 }
 
-func (c *PerspectiveCamera) LookAt(from, to Point3, up Vector3) {
-	c.transform = LookAtTransform(from, to, up)
+func (c *PerspectiveCamera) LookAt(from, to cgmath.Point3, up cgmath.Vector3) {
+	c.transform = cgmath.LookAtTransform(from, to, up)
 }

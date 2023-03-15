@@ -5,7 +5,16 @@ import (
 	"log"
 	"math"
 	"os"
-	"sergioffpc/rtx/pkg/rtx"
+	"sergioffpc/rtx/pkg/rtx/camera"
+	"sergioffpc/rtx/pkg/rtx/cgmath"
+	"sergioffpc/rtx/pkg/rtx/color"
+	"sergioffpc/rtx/pkg/rtx/film"
+	"sergioffpc/rtx/pkg/rtx/integrator"
+	"sergioffpc/rtx/pkg/rtx/light"
+	"sergioffpc/rtx/pkg/rtx/material"
+	"sergioffpc/rtx/pkg/rtx/scene"
+	"sergioffpc/rtx/pkg/rtx/shape"
+	"sergioffpc/rtx/pkg/rtx/texture"
 
 	"github.com/schollz/progressbar/v3"
 )
@@ -17,100 +26,100 @@ func main() {
 	flag.IntVar(&height, "height", 720, "image height resolution in pixels")
 	flag.Parse()
 
-	film := rtx.NewImageFilm(width, height)
-	camera := rtx.NewPerspectiveCamera(width, height, math.Pi/3)
-	camera.LookAt(rtx.Point3{X: 0, Y: 1.5, Z: -5}, rtx.Point3{X: 0, Y: 1, Z: 0}, rtx.Vector3{X: 0, Y: 1, Z: 0})
-	scene := rtx.Scene{
-		Geometries: []rtx.GeometricPrimitive{
+	film := film.NewImageFilm(width, height)
+	camera := camera.NewPerspectiveCamera(width, height, math.Pi/3)
+	camera.LookAt(cgmath.Point3{X: 0, Y: 1.5, Z: -5}, cgmath.Point3{X: 0, Y: 1, Z: 0}, cgmath.Vector3{X: 0, Y: 1, Z: 0})
+	scene := scene.Scene{
+		Geometries: []scene.GeometricPrimitive{
 			{
 				Label: "floor",
-				Shape: rtx.PlaneShape{},
-				Material: rtx.PhongMaterial{
+				Shape: shape.PlaneShape{},
+				Material: material.PhongMaterial{
 					Ks:    0,
 					Kd:    0.9,
 					Ka:    0.1,
 					Kr:    0.5,
 					Alpha: 200,
-					Tex:   rtx.RingTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
+					Tex:   texture.RingTexture{Kd1: color.Spectrum{R: 1, G: 0, B: 0}, Kd2: color.Spectrum{R: 1, G: 1, B: 1}},
 				},
-				ObjectToWorld: rtx.IdentityTransform(),
-				WorldToObject: rtx.IdentityTransform().Inverse(),
+				ObjectToWorld: cgmath.IdentityTransform(),
+				WorldToObject: cgmath.IdentityTransform().Inverse(),
 			},
 			{
 				Label: "ball at center",
-				Shape: rtx.SphereShape{},
-				Material: rtx.PhongMaterial{
+				Shape: shape.SphereShape{},
+				Material: material.PhongMaterial{
 					Ks:    0.3,
 					Kd:    0.7,
 					Ka:    0.1,
 					Kr:    0.5,
 					Alpha: 200,
-					Tex:   rtx.SolidTexture{Kd: rtx.Spectrum{R: 1, G: 0, B: 0}},
+					Tex:   texture.SolidTexture{Kd: color.Spectrum{R: 1, G: 0, B: 0}},
 				},
-				ObjectToWorld: rtx.ChainTransform(
-					rtx.RotateZTransform(math.Pi/4),
-					rtx.TranslateTransform(-0.5, 1, 0.5),
+				ObjectToWorld: cgmath.ChainTransform(
+					cgmath.RotateZTransform(math.Pi/4),
+					cgmath.TranslateTransform(-0.5, 1, 0.5),
 				),
-				WorldToObject: rtx.ChainTransform(
-					rtx.RotateZTransform(math.Pi/4),
-					rtx.TranslateTransform(-0.5, 1, 0.5),
+				WorldToObject: cgmath.ChainTransform(
+					cgmath.RotateZTransform(math.Pi/4),
+					cgmath.TranslateTransform(-0.5, 1, 0.5),
 				).Inverse(),
 			},
 			{
 				Label: "ball at right",
-				Shape: rtx.SphereShape{},
-				Material: rtx.PhongMaterial{
+				Shape: shape.SphereShape{},
+				Material: material.PhongMaterial{
 					Ks:    0.3,
 					Kd:    0.7,
 					Ka:    0.1,
 					Kr:    0.5,
 					Alpha: 200,
-					Tex:   rtx.SolidTexture{Kd: rtx.Spectrum{R: 1, G: 0, B: 0}},
+					Tex:   texture.SolidTexture{Kd: color.Spectrum{R: 1, G: 0, B: 0}},
 				},
-				ObjectToWorld: rtx.ChainTransform(
-					rtx.ScaleTransform(0.5, 0.5, 0.5),
-					rtx.TranslateTransform(1.5, 0.5, -0.5),
+				ObjectToWorld: cgmath.ChainTransform(
+					cgmath.ScaleTransform(0.5, 0.5, 0.5),
+					cgmath.TranslateTransform(1.5, 0.5, -0.5),
 				),
-				WorldToObject: rtx.ChainTransform(
-					rtx.ScaleTransform(0.5, 0.5, 0.5),
-					rtx.TranslateTransform(1.5, 0.5, -0.5),
+				WorldToObject: cgmath.ChainTransform(
+					cgmath.ScaleTransform(0.5, 0.5, 0.5),
+					cgmath.TranslateTransform(1.5, 0.5, -0.5),
 				).Inverse(),
 			},
 			{
 				Label: "ball at left",
-				Shape: rtx.SphereShape{},
-				Material: rtx.PhongMaterial{
+				Shape: shape.SphereShape{},
+				Material: material.PhongMaterial{
 					Ks:    0.3,
 					Kd:    0.7,
 					Ka:    0.1,
 					Kr:    0.5,
 					Alpha: 200,
-					Tex:   rtx.SolidTexture{Kd: rtx.Spectrum{R: 1, G: 0, B: 0}},
+					Tex:   texture.SolidTexture{Kd: color.Spectrum{R: 1, G: 0, B: 0}},
 				},
-				ObjectToWorld: rtx.ChainTransform(
-					rtx.ScaleTransform(0.33, 0.33, 0.33),
-					rtx.RotateZTransform(math.Pi/2),
-					rtx.TranslateTransform(-1.5, 0.33, -0.75),
+				ObjectToWorld: cgmath.ChainTransform(
+					cgmath.ScaleTransform(0.33, 0.33, 0.33),
+					cgmath.RotateZTransform(math.Pi/2),
+					cgmath.TranslateTransform(-1.5, 0.33, -0.75),
 				),
-				WorldToObject: rtx.ChainTransform(
-					rtx.ScaleTransform(0.33, 0.33, 0.33),
-					rtx.RotateZTransform(math.Pi/2),
-					rtx.TranslateTransform(-1.5, 0.33, -0.75),
+				WorldToObject: cgmath.ChainTransform(
+					cgmath.ScaleTransform(0.33, 0.33, 0.33),
+					cgmath.RotateZTransform(math.Pi/2),
+					cgmath.TranslateTransform(-1.5, 0.33, -0.75),
 				).Inverse(),
 			},
 		},
-		Lights: []rtx.LightPrimitive{
+		Lights: []scene.LightPrimitive{
 			{
 				Label: "point light",
-				Light: rtx.PointLight{
-					I: rtx.Spectrum{R: 100, G: 100, B: 100},
+				Light: light.PointLight{
+					I: color.Spectrum{R: 100, G: 100, B: 100},
 				},
-				LightToWorld: rtx.TranslateTransform(-10, 10, -10),
-				WorldToLight: rtx.TranslateTransform(-10, 10, -10).Inverse(),
+				LightToWorld: cgmath.TranslateTransform(-10, 10, -10),
+				WorldToLight: cgmath.TranslateTransform(-10, 10, -10).Inverse(),
 			},
 		},
 	}
-	integrator := rtx.Whitted{MaxDepth: 4}
+	integrator := integrator.Whitted{MaxDepth: 4}
 
 	pb := progressbar.Default(int64(height * width))
 	for y := 0; y < height; y++ {
