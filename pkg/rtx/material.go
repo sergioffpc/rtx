@@ -4,6 +4,7 @@ import "math"
 
 type Material interface {
 	F(p Point3, n Normal3, wo Vector3, uv Point2, wi Vector3, i Spectrum) Spectrum
+	Rho() float64
 }
 
 type PhongMaterial struct {
@@ -13,6 +14,8 @@ type PhongMaterial struct {
 	Kd float64
 	// Ka is an ambient reflection constant.
 	Ka float64
+	// Kr is a reflective constant.
+	Kr float64
 	// Alpha is a shininess constant.
 	Alpha float64
 	// Tex is the surface texture.
@@ -38,3 +41,5 @@ func (m PhongMaterial) F(p Point3, n Normal3, wo Vector3, uv Point2, wi Vector3,
 
 	return f
 }
+
+func (m PhongMaterial) Rho() float64 { return m.Kr }

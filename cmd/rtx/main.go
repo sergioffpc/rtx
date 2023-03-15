@@ -29,6 +29,7 @@ func main() {
 					Ks:    0,
 					Kd:    0.9,
 					Ka:    0.1,
+					Kr:    0.5,
 					Alpha: 200,
 					Tex:   rtx.RingTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
 				},
@@ -42,8 +43,9 @@ func main() {
 					Ks:    0.3,
 					Kd:    0.7,
 					Ka:    0.1,
+					Kr:    0.5,
 					Alpha: 200,
-					Tex:   rtx.CheckerTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
+					Tex:   rtx.SolidTexture{Kd: rtx.Spectrum{R: 1, G: 0, B: 0}},
 				},
 				ObjectToWorld: rtx.ChainTransform(
 					rtx.RotateZTransform(math.Pi/4),
@@ -61,8 +63,9 @@ func main() {
 					Ks:    0.3,
 					Kd:    0.7,
 					Ka:    0.1,
+					Kr:    0.5,
 					Alpha: 200,
-					Tex:   rtx.StripeTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
+					Tex:   rtx.SolidTexture{Kd: rtx.Spectrum{R: 1, G: 0, B: 0}},
 				},
 				ObjectToWorld: rtx.ChainTransform(
 					rtx.ScaleTransform(0.5, 0.5, 0.5),
@@ -80,8 +83,9 @@ func main() {
 					Ks:    0.3,
 					Kd:    0.7,
 					Ka:    0.1,
+					Kr:    0.5,
 					Alpha: 200,
-					Tex:   rtx.GradientTexture{Kd1: rtx.Spectrum{R: 1, G: 0, B: 0}, Kd2: rtx.Spectrum{R: 1, G: 1, B: 1}},
+					Tex:   rtx.SolidTexture{Kd: rtx.Spectrum{R: 1, G: 0, B: 0}},
 				},
 				ObjectToWorld: rtx.ChainTransform(
 					rtx.ScaleTransform(0.33, 0.33, 0.33),
@@ -106,7 +110,7 @@ func main() {
 			},
 		},
 	}
-	integrator := rtx.Whitted{}
+	integrator := rtx.Whitted{MaxDepth: 4}
 
 	pb := progressbar.Default(int64(height * width))
 	for y := 0; y < height; y++ {

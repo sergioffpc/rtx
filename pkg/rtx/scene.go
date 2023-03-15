@@ -30,6 +30,10 @@ func (i Interaction) F(primitive LightPrimitive) Spectrum {
 	)
 }
 
+func (i Interaction) Rho() float64 {
+	return i.Primitive.Material.Rho()
+}
+
 type GeometricPrimitive struct {
 	Label         string
 	Shape         Shape
