@@ -35,7 +35,9 @@ func (w Whitted) li(scene *scene.Scene, ray cgmath.Ray, depth int) color.Spectru
 		li.AddAssign(isect.F(light))
 	}
 
-	return li.Add(w.reflection(scene, isect, depth))
+	li.AddAssign(w.reflection(scene, isect, depth))
+
+	return li
 }
 
 func (Whitted) litted(scene *scene.Scene, isect scene.Interaction, primitive scene.LightPrimitive) bool {

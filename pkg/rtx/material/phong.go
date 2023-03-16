@@ -16,8 +16,12 @@ type PhongMaterial struct {
 	Ka float64
 	// Kr is a reflective constant.
 	Kr float64
-	// Alpha is a shininess constant.
-	Alpha float64
+	// Kt is a refractive constant.
+	Kt float64
+	// Shininess is a shininess constant.
+	Shininess float64
+	// Transparency is a transparency constant.
+	Transparency float64
 	// Tex is the surface texture.
 	Tex texture.Texture
 }
@@ -35,7 +39,7 @@ func (m PhongMaterial) F(p cgmath.Point3, n cgmath.Normal3, wo cgmath.Vector3, u
 
 	woDr := cgmath.Vector3.Dot(wo, cgmath.Vector3.Reflect(wi.Neg(), n))
 	if woDr > 0 {
-		s := m.Ks * math.Pow(woDr, m.Alpha)
+		s := m.Ks * math.Pow(woDr, m.Shininess)
 		f.AddAssign(color.Spectrum.MulFloat(i, s))
 	}
 
