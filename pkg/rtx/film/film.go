@@ -1,11 +1,11 @@
 package film
 
 import (
-	"io"
-	"sergioffpc/rtx/pkg/rtx/color"
+	"sergioffpc/rtx/pkg/rtx/camera"
+	"sergioffpc/rtx/pkg/rtx/integrator"
+	"sergioffpc/rtx/pkg/rtx/scene"
 )
 
 type Film interface {
-	Set(x, y int, s color.Spectrum)
-	Write(w io.Writer)
+	Render(scene *scene.Scene, integrator integrator.Integrator, camera camera.Camera) error
 }

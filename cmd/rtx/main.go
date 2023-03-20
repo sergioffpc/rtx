@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 	"math"
-	"os"
+
 	"sergioffpc/rtx/pkg/rtx/camera"
 	"sergioffpc/rtx/pkg/rtx/cgmath"
 	"sergioffpc/rtx/pkg/rtx/color"
@@ -12,13 +12,9 @@ import (
 	"sergioffpc/rtx/pkg/rtx/integrator"
 	"sergioffpc/rtx/pkg/rtx/light"
 	"sergioffpc/rtx/pkg/rtx/material"
-	"sergioffpc/rtx/pkg/rtx/sampler"
 	"sergioffpc/rtx/pkg/rtx/scene"
 	"sergioffpc/rtx/pkg/rtx/shape"
 	"sergioffpc/rtx/pkg/rtx/texture"
-	"sync"
-
-	"github.com/schollz/progressbar/v3"
 )
 
 func main() {
@@ -30,7 +26,7 @@ func main() {
 	flag.IntVar(&msaa, "msaa", 8, "number of multisample anti-aliasing (MSAA) samples")
 	flag.Parse()
 
-	film := film.NewImageFilm(width, height)
+	film := film.NewImageFilm(width, height, msaa)
 	camera := camera.NewPerspectiveCamera(width, height, math.Pi/3)
 	camera.LookAt(cgmath.Point3{X: 0, Y: 1.5, Z: -5}, cgmath.Point3{X: 0, Y: 1, Z: 0}, cgmath.Vector3{X: 0, Y: 1, Z: 0})
 	scene := scene.Scene{
@@ -130,31 +126,7 @@ func main() {
 	}
 	integrator := integrator.Whitted{MaxDepth: 4}
 
-	pb := progressbar.Default(int64(height * width * msaa))
-
-	var wg sync.WaitGroup
-	for y := 0; y < height; y++ {
-		wg.Add(1)
-		go func(y int) {
-			defer wg.Done()
-			for x := 0; x < width; x++ {
-				var l color.Spectrum
-				for i := 0; i < msaa; i++ {
-					pb.Add(1)
-					r := camera.GenerateRay(x, y, sampler.Get2D())
-					l.AddAssign(integrator.Render(&scene, r))
-				}
-				film.Set(x, y, l.DivFloat(float64(msaa)))
-			}
-		}(y)
-	}
-	wg.Wait()
-
-	w, err := os.Create("image.png")
-	if err != nil {
+	if err := film.Render(&scene, &integrator, &camera); err != nil {
 		log.Fatal(err)
 	}
-	defer w.Close()
-
-	film.Write(w)
 }

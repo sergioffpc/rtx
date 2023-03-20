@@ -11,7 +11,7 @@ type Whitted struct {
 	MaxDepth int
 }
 
-func (w Whitted) Render(scene *scene.Scene, ray cgmath.Ray) color.Spectrum {
+func (w Whitted) Li(scene *scene.Scene, ray cgmath.Ray) color.Spectrum {
 	return w.li(scene, ray, w.MaxDepth)
 }
 

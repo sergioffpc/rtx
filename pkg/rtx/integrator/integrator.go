@@ -7,5 +7,5 @@ import (
 )
 
 type Integrator interface {
-	Render(scene *scene.Scene, ray cgmath.Ray) color.Spectrum
+	Li(scene *scene.Scene, ray cgmath.Ray) color.Spectrum
 }
