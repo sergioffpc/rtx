@@ -31,7 +31,7 @@ func TestPerspectiveCameraGenerateRay(t *testing.T) {
 		}},
 	} {
 		t.Run("", func(t *testing.T) {
-			got := tc.camera.GenerateRay(tc.x, tc.y)
+			got := tc.camera.GenerateRay(tc.x, tc.y, cgmath.Point2{X: 0.5, Y: 0.5})
 			assert.True(t, cgmath.Ray.Eq(tc.expected, got), fmt.Sprintf("expected: %v, got: %v", tc.expected, got))
 		})
 	}

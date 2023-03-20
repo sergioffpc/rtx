@@ -12,6 +12,7 @@ import (
 	"sergioffpc/rtx/pkg/rtx/integrator"
 	"sergioffpc/rtx/pkg/rtx/light"
 	"sergioffpc/rtx/pkg/rtx/material"
+	"sergioffpc/rtx/pkg/rtx/sampler"
 	"sergioffpc/rtx/pkg/rtx/scene"
 	"sergioffpc/rtx/pkg/rtx/shape"
 	"sergioffpc/rtx/pkg/rtx/texture"
@@ -21,9 +22,11 @@ import (
 
 func main() {
 	var width, height int
+	var msaa int
 
 	flag.IntVar(&width, "width", 1280, "image width resolution in pixels")
 	flag.IntVar(&height, "height", 720, "image height resolution in pixels")
+	flag.IntVar(&msaa, "msaa", 8, "number of multisample anti-aliasing (MSAA) samples")
 	flag.Parse()
 
 	film := film.NewImageFilm(width, height)
@@ -126,13 +129,16 @@ func main() {
 	}
 	integrator := integrator.Whitted{MaxDepth: 4}
 
-	pb := progressbar.Default(int64(height * width))
+	pb := progressbar.Default(int64(height * width * msaa))
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			pb.Add(1)
-			r := camera.GenerateRay(x, y)
-			l := integrator.Render(&scene, r)
-			film.Set(x, y, l)
+			var l color.Spectrum
+			for i := 0; i < msaa; i++ {
+				pb.Add(1)
+				r := camera.GenerateRay(x, y, sampler.Get2D())
+				l.AddAssign(integrator.Render(&scene, r))
+			}
+			film.Set(x, y, l.DivFloat(float64(msaa)))
 		}
 	}
 

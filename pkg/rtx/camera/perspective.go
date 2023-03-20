@@ -27,9 +27,9 @@ func NewPerspectiveCamera(width, height int, fov float64) PerspectiveCamera {
 	}
 }
 
-func (c PerspectiveCamera) GenerateRay(x, y int) cgmath.Ray {
-	cx := c.halfWidth - (float64(x)+0.5)*c.pixelWidth
-	cy := c.halfHeight - (float64(y)+0.5)*c.pixelHeight
+func (c PerspectiveCamera) GenerateRay(x, y int, u cgmath.Point2) cgmath.Ray {
+	cx := c.halfWidth - (float64(x)+u.X)*c.pixelWidth
+	cy := c.halfHeight - (float64(y)+u.Y)*c.pixelHeight
 
 	o := cgmath.Point3{}.Transform(c.transform.Inverse())
 	px := cgmath.Point3{X: cx, Y: cy, Z: -1}.Transform(c.transform.Inverse())
