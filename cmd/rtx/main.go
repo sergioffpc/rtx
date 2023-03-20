@@ -16,6 +16,7 @@ import (
 	"sergioffpc/rtx/pkg/rtx/scene"
 	"sergioffpc/rtx/pkg/rtx/shape"
 	"sergioffpc/rtx/pkg/rtx/texture"
+	"sync"
 
 	"github.com/schollz/progressbar/v3"
 )
@@ -130,17 +131,24 @@ func main() {
 	integrator := integrator.Whitted{MaxDepth: 4}
 
 	pb := progressbar.Default(int64(height * width * msaa))
+
+	var wg sync.WaitGroup
 	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			var l color.Spectrum
-			for i := 0; i < msaa; i++ {
-				pb.Add(1)
-				r := camera.GenerateRay(x, y, sampler.Get2D())
-				l.AddAssign(integrator.Render(&scene, r))
+		wg.Add(1)
+		go func(y int) {
+			defer wg.Done()
+			for x := 0; x < width; x++ {
+				var l color.Spectrum
+				for i := 0; i < msaa; i++ {
+					pb.Add(1)
+					r := camera.GenerateRay(x, y, sampler.Get2D())
+					l.AddAssign(integrator.Render(&scene, r))
+				}
+				film.Set(x, y, l.DivFloat(float64(msaa)))
 			}
-			film.Set(x, y, l.DivFloat(float64(msaa)))
-		}
+		}(y)
 	}
+	wg.Wait()
 
 	w, err := os.Create("image.png")
 	if err != nil {
